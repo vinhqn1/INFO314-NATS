@@ -42,8 +42,8 @@ public class StockPublisher {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String timestamp = dateFormat.format(new Date());
             String message = "<message sent=\"" + timestamp + "\"><stock><name>" + symbol + "</name><adjustment>" + adjustment + "</adjustment><adjustedPrice>" + price + "</adjustedPrice></stock></message>";
-            nc.publish("Stock Market", message.getBytes());
-        } catch (IOException) {
+            nc.publish("stockmarket", message.getBytes());
+        } catch (IOException | InterruptedException ex) {
             ex.printStackTrace();
         }
         
