@@ -13,7 +13,6 @@ public class StockPublisher {
           natsURL = args[0];
       }
 
-      System.console().writer().println("Starting stock publisher....");
 
       StockMarket sm1 = new StockMarket(StockPublisher::publishMessage, "AMZN", "MSFT", "GOOG");
       new Thread(sm1).start();
