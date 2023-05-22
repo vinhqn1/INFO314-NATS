@@ -1,26 +1,57 @@
 import io.nats.client.*;
 import java.util.*;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 
 /**
  * Take the NATS URL on the command-line.
  */
 public class StockPublisher {
+    public static String natsURL = "localhost:4222";
   public static void main(String... args) throws IOException, InterruptedException {
-      String natsURL = "nats://127.0.0.1:4222";
+
       if (args.length > 0) {
           natsURL = args[0];
       }
 
+      HashMap<String, ArrayList<String>> markets = new HashMap<>();
+
+      try (BufferedReader reader = new BufferedReader(new FileReader("stocks.txt"))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(":");
+            if (parts.length == 2) {
+                String market = parts[0].trim();
+                String[] symbols = parts[1].trim().split(" ");
+                ArrayList<String> symbolList = new ArrayList<>();
+                for (String symbol : symbols) {
+                    symbolList.add(market + ":" + symbol.trim());
+                }
+                markets.put(market, symbolList);
+            }
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      System.out.println(markets.toString());
+
       System.console().writer().println("Starting stock publisher....");
 
-      StockMarket sm1 = new StockMarket(StockPublisher::publishMessage, "AMZN", "MSFT", "GOOG");
-      new Thread(sm1).start();
-      StockMarket sm2 = new StockMarket(StockPublisher::publishMessage, "ACTV", "BLIZ", "ROVIO");
-      new Thread(sm2).start();
-      StockMarket sm3 = new StockMarket(StockPublisher::publishMessage, "GE", "GMC", "FORD");
-      new Thread(sm3).start();
+      for (Map.Entry<String, ArrayList<String>> entry : markets.entrySet()) {
+        String market = entry.getKey();
+        ArrayList<String> symbols = entry.getValue();
+
+        StockMarket stockMarket = new StockMarket(StockPublisher::publishMessage, symbols.toArray(new String[0]));
+        Thread thread = new Thread(stockMarket);
+        thread.start();
+      }
+
+    //   StockMarket sm1 = new StockMarket(StockPublisher::publishMessage, "NASDAQ.AMZN", "MSFT", "GOOG");
+    //   new Thread(sm1).start();
+    //   StockMarket sm2 = new StockMarket(StockPublisher::publishMessage, "ACTV", "BLIZ", "ROVIO");
+    //   new Thread(sm2).start();
+    //   StockMarket sm3 = new StockMarket(StockPublisher::publishMessage, "GE", "GMC", "FORD");
+    //   new Thread(sm3).start();
     }
 
     public synchronized static void publishDebugOutput(String symbol, int adjustment, int price){
@@ -28,29 +59,14 @@ public class StockPublisher {
     }
     // When you have the NATS code here to publish a message, put "publishMessage" in
     // the above where "publishDebugOutput" currently is
-    public synchronized static void publishMessage(String symbol, int adjustment, int price){
-
-        // <message sent="(timestamp)">
-        //     <stock>
-        //         <name>(symbol)</name>
-        //         <adjustment>(amount)</adjustment>
-        //         <adjustedPrice>(price after adjustment)</adjustedPrice>
-        //     </stock>
-        // </message>
-        try {
-            Connection nc = Nats.connect("localhost:4222");
+    public synchronized static void publishMessage(String symbol, int adjustment, int price) {
+        try (Connection nc = Nats.connect(natsURL)) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String timestamp = dateFormat.format(new Date());
             String message = "<message sent=\"" + timestamp + "\"><stock><name>" + symbol + "</name><adjustment>" + adjustment + "</adjustment><adjustedPrice>" + price + "</adjustedPrice></stock></message>";
-            nc.publish("stockmarket", message.getBytes());
+            nc.publish("MARKET." + symbol, message.getBytes());
         } catch (IOException | InterruptedException ex) {
             ex.printStackTrace();
         }
-        
-        // Dispatcher d = nc.createDispatcher((msg) -> {
-        //     String response = new String(msg.getData(), StandardCharsets.UTF_8);
-        // });
-        
-        // d.subscribe("subject");
     } 
 }
