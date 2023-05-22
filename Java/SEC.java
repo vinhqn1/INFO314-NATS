@@ -1,49 +1,49 @@
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
-import org.xml.sax.SAXException;
 import java.io.*;
 import io.nats.client.*;
-import java.util.Date;
-import java.sql.Timestamp;
 
 public class SEC {
   public static void main(String... args) throws Exception {
     Connection nc = Nats.connect("nats://localhost:4222");
+    DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+
     Dispatcher d = nc.createDispatcher((msg) -> {
-        System.out.println("Received a message.");
-         String xml = new String(msg.getData());
-         try{
-           FileWriter fw = new FileWriter("suspicious.log", true);
-           DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-           DocumentBuilder builder = factory.newDocumentBuilder();
-           Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
+      System.out.println("Received a message.");
+      String xml = new String(msg.getData());
 
-           document.getDocumentElement().normalize();
-           Element root = document.getDocumentElement();
+      try {
+        Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
+        Element root = document.getDocumentElement();
 
-           NodeList buy = root.getElementsByTagName("buy");
-           NodeList sell = root.getElementsByTagName("sell");
+        // Parse the order receipt XML structure
+        String timestamp = root.getAttribute("timestamp");
+        String client = root.getAttribute("client");
+        String broker = root.getAttribute("broker");
+        String order = root.getTextContent().trim();
+        double amount = Double.parseDouble(order);
 
-           int price = -1;
-           String timestamp = root.getAttribute("sent");
-           String broker = root.getAttribute("broker");
+        // Process the extracted information
+        System.out.println("Received order receipt:");
+        System.out.println("Timestamp: " + timestamp);
+        System.out.println("Client: " + client);
+        System.out.println("Broker: " + broker);
+        System.out.println("Order: " + order);
+        System.out.println("Amount: " + amount);
 
-           double transaction = -1;
-            NodeList amount = root.getElementsByTagName("complete");
-            transaction = Double.parseDouble(((Element) amount.item(0)).getAttribute("amount"));
-
-             System.out.println("[Transaction Price]: " + transaction);
-
-            if (transaction > 5000) {
-
-                fw.write(new String(timestamp + ", " + msg.getSubject() + ", " + broker + ", " + "\n"));
-                fw.write(xml + "\n\n");
-                fw.close();
-            }
-         } catch (Exception e) {
-                e.printStackTrace();
-         }
+        // Log suspicious transactions
+        if (amount > 5000) {
+          try (FileWriter fw = new FileWriter("suspicions.log", true)) {
+            fw.write(String.format("%s, %s, %s, %s, %.2f\n", timestamp, client, broker, order, amount));
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     });
+
     d.subscribe(">");
   }
 }
