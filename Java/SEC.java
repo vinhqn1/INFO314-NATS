@@ -40,7 +40,7 @@ public class SEC {
            transactionValue = price * quantity;
            
            // Assuming suspicious transaction is above $5000 or 5000 in your units.
-           if (transactionValue > 5000) {
+           if (transactionValue > 500000) {
              try (FileWriter fw = new FileWriter("suspicious.log", true)) {
                  fw.write(String.format("%s, %s, %s, %s, %d, %d, %d\n", timestamp, msg.getSubject(), broker, stock, price, quantity, transactionValue));
              } catch (IOException e) {

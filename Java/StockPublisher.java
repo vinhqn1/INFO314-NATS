@@ -16,42 +16,42 @@ public class StockPublisher {
 
       HashMap<String, ArrayList<String>> markets = new HashMap<>();
 
-      try (BufferedReader reader = new BufferedReader(new FileReader("stocks.txt"))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] parts = line.split(":");
-            if (parts.length == 2) {
-                String market = parts[0].trim();
-                String[] symbols = parts[1].trim().split(" ");
-                ArrayList<String> symbolList = new ArrayList<>();
-                for (String symbol : symbols) {
-                    symbolList.add(market + ":" + symbol.trim());
-                }
-                markets.put(market, symbolList);
-            }
-        }
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-      System.out.println(markets.toString());
+    //   try (BufferedReader reader = new BufferedReader(new FileReader("stocks.txt"))) {
+    //     String line;
+    //     while ((line = reader.readLine()) != null) {
+    //         String[] parts = line.split(":");
+    //         if (parts.length == 2) {
+    //             String market = parts[0].trim();
+    //             String[] symbols = parts[1].trim().split(" ");
+    //             ArrayList<String> symbolList = new ArrayList<>();
+    //             for (String symbol : symbols) {
+    //                 symbolList.add(market + ":" + symbol.trim());
+    //             }
+    //             markets.put(market, symbolList);
+    //         }
+    //     }
+    //   } catch (IOException e) {
+    //     e.printStackTrace();
+    //   }
+    //   System.out.println(markets.toString());
 
       System.console().writer().println("Starting stock publisher....");
 
-      for (Map.Entry<String, ArrayList<String>> entry : markets.entrySet()) {
-        String market = entry.getKey();
-        ArrayList<String> symbols = entry.getValue();
+    //   for (Map.Entry<String, ArrayList<String>> entry : markets.entrySet()) {
+    //     String market = entry.getKey();
+    //     ArrayList<String> symbols = entry.getValue();
 
-        StockMarket stockMarket = new StockMarket(StockPublisher::publishMessage, symbols.toArray(new String[0]));
-        Thread thread = new Thread(stockMarket);
-        thread.start();
-      }
+    //     StockMarket stockMarket = new StockMarket(StockPublisher::publishMessage, symbols.toArray(new String[0]));
+    //     Thread thread = new Thread(stockMarket);
+    //     thread.start();
+    //   }
 
-    //   StockMarket sm1 = new StockMarket(StockPublisher::publishMessage, "NASDAQ.AMZN", "MSFT", "GOOG");
-    //   new Thread(sm1).start();
-    //   StockMarket sm2 = new StockMarket(StockPublisher::publishMessage, "ACTV", "BLIZ", "ROVIO");
-    //   new Thread(sm2).start();
-    //   StockMarket sm3 = new StockMarket(StockPublisher::publishMessage, "GE", "GMC", "FORD");
-    //   new Thread(sm3).start();
+      StockMarket sm1 = new StockMarket(StockPublisher::publishMessage, "NASDAQ.AMZN", "MSFT", "GOOG");
+      new Thread(sm1).start();
+      StockMarket sm2 = new StockMarket(StockPublisher::publishMessage, "ACTV", "BLIZ", "ROVIO");
+      new Thread(sm2).start();
+      StockMarket sm3 = new StockMarket(StockPublisher::publishMessage, "GE", "GMC", "FORD");
+      new Thread(sm3).start();
     }
 
     public synchronized static void publishDebugOutput(String symbol, int adjustment, int price){

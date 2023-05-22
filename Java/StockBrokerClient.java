@@ -36,8 +36,8 @@ public class StockBrokerClient {
 
         String stockBroker = "test";
         String natsURL = "nats://127.0.0.1:4222";
-        String portfolioPath = "./Clients/portfolio-1.xml";
-        String strategyPath = "./Clients/strategy-1.xml";
+        String portfolioPath = "../Clients/portfolio-1.xml";
+        String strategyPath = "../Clients/strategy-1.xml";
         nc = Nats.connect("localhost:4222");
         buildPortfolio(portfolioPath);
         buildStrategy(strategyPath);
@@ -62,6 +62,7 @@ public class StockBrokerClient {
             }
 
         });
+		dispatcher.subscribe("MARKET.*");
     }
     public static void updatePortfolio() throws ParserConfigurationException {
 
@@ -84,7 +85,7 @@ public class StockBrokerClient {
 
         // write dom document to a file
         try (FileOutputStream output =
-                     new FileOutputStream("./Clients/test.xml")) {
+                     new FileOutputStream("../Clients/test.xml")) {
             writeXml(doc, output);
         } catch (IOException | TransformerException e) {
             e.printStackTrace();
@@ -103,10 +104,11 @@ public class StockBrokerClient {
         request.append(shares);
         request.append("\" /></order>");
         String send = request.toString();
+		System.out.println(send);
         try {
-            Message msg = nc.request(stockBroker, send.getBytes(), Duration.ofSeconds(100));
+            Message msg = nc.request("BROKER."+stockBroker, send.getBytes(), Duration.ofSeconds(100));
             System.out.println(new String(msg.getData()));
-            if(method.equals(sell)) {
+            if(method.equals("sell")) {
                 portfolio.put(symbol, 0);
             } else {
                 portfolio.put(symbol, portfolio.get(symbol) + shares);

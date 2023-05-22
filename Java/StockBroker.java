@@ -8,12 +8,12 @@ import javax.xml.parsers.*;
 import java.io.StringReader;
 public class StockBroker {
 
-	public static String natsURL = "localhost:4222";
+	public static String natsURL = "nats://localhost:4222";
 	public static String name;
 	public static HashMap<String, Integer> currentMarket;
 	public static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-	public static void main(String... args) throws Exception {
+	public static void main(String... args) {
 		if (args.length > 0) {
 			name = args[0];
 		}
@@ -21,15 +21,14 @@ public class StockBroker {
 
 		new Thread(() -> getMarket()).start();
 		new Thread(() -> handleClient()).start();
-		System.in.read();
 	}
 
 	private synchronized static void getMarket() {
-		try (Connection nc = Nats.connect(natsURL);) {
+		try {
+			Connection nc = Nats.connect(natsURL);
 			System.out.println("connection made");
 			Dispatcher d = nc.createDispatcher((msg) -> {
 				String response = new String(msg.getData());
-				System.out.println(response);
 				try {
 					DocumentBuilder builder = factory.newDocumentBuilder();	
 					Document document = builder.parse(new InputSource(new StringReader(response)));
@@ -37,24 +36,27 @@ public class StockBroker {
 					String symbol = root.getElementsByTagName("name").item(0).getTextContent();
 					int adjustedPrice = Integer.parseInt(root.getElementsByTagName("adjustedPrice").item(0).getTextContent());
 					currentMarket.put(symbol, adjustedPrice);
-					System.console().writer().println(currentMarket.get(symbol));
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			});
 			d.subscribe("MARKET.*");
-        } catch (IOException | InterruptedException ex) {
-            ex.printStackTrace();
-        }
-	} 
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	}
 
 	private synchronized static void handleClient() {
-		try (Connection nc = Nats.connect(natsURL);) {
+		try {
+			Connection nc = Nats.connect(natsURL);
 			System.out.println("connection made");
 			Dispatcher d = nc.createDispatcher((msg) -> {
 				String response = new String(msg.getData());
 				System.out.println(response);
 				String completeOrder = processOrder(response);
+				byte[] orderAsBytes = completeOrder.getBytes();
+				nc.publish(msg.getReplyTo(), orderAsBytes);
 			});
 			d.subscribe("BROKER."+name);
         } catch (IOException | InterruptedException ex) {
@@ -78,7 +80,8 @@ public class StockBroker {
 			Element orderElement = document.getDocumentElement();
 			Element orderNode = (Element) orderElement.getChildNodes().item(0);
 			symbol = orderNode.getAttribute("symbol");
-			shares = Integer.parseInt(orderElement.getAttribute("amount"));
+			
+			shares = Integer.parseInt(orderNode.getAttribute("amount"));
 			buySell = orderElement.getTagName();
 			String orderString = order.replace("<order>", "").replace("</order>", "");
 			String response = "<orderReceipt>" + orderString;
