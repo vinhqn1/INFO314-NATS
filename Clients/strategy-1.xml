@@ -1,11 +1,35 @@
 <!-- A very tech-centric strategy -->
 <strategy>
-  <when><stock>MSFT</stock><above>5000</above><sell /></when>
-  <when><stock>AMZN</stock><above>5000</above><sell /></when>
-  <when><stock>GOOG</stock><above>5000</above><sell /></when>
-  <when><stock>NTFLX</stock><above>5000</above><sell /></when>
-  <when><stock>MSFT</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>AIRBNB</stock><above>5000</above><sell /></when>
+  <when><stock>AAPL</stock><above>5000</above><sell /></when>
+  <when><stock>ACU</stock><above>5000</above><sell /></when>
+  <when><stock>AAL</stock><above>5000</above><sell /></when>
+  <when><stock>ABDE</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>AN</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>AXP</stock><below>1500</below><buy>500</buy></when>
+  <when><stock>AN</stock><below>1500</below><buy>500</buy></when>
   <when><stock>AMZN</stock><below>1000</below><buy>500</buy></when>
-  <when><stock>GOOG</stock><below>1500</below><buy>500</buy></when>
-  <when><stock>NTFLX</stock><below>1500</below><buy>500</buy></when>
+  <when><stock>AZO</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>BARK</stock><below>1500</below><buy>500</buy></when>
+  <when><stock>NVDA</stock><below>1500</below><buy>500</buy></when>
+  <when><stock>FOSL</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>OPI</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>CMCSA</stock><below>1500</below><buy>500</buy></when>
+  <when><stock>TSLA</stock><below>1500</below><buy>500</buy></when>
+  <when><stock>QQQ</stock><above>5000</above><sell /></when>
+  <when><stock>COMP</stock><above>5000</above><sell /></when>
+  <when><stock>AMP</stock><above>5000</above><sell /></when>
+  <when><stock>NDX</stock><above>5000</above><sell /></when>
+  <when><stock>LFCR</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>ACPE</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>AEP</stock><above>5000</above><sell /></when>
+  <when><stock>BC88</stock><above>5000</above><sell /></when>
+  <when><stock>HYUD</stock><above>5000</above><sell /></when>
+  <when><stock>0J5T</stock><above>5000</above><sell /></when>
+  <when><stock>0QLL</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>0A1K</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>OLG5</stock><above>5000</above><sell /></when>
+  <when><stock>0REK</stock><above>5000</above><sell /></when>
+  <when><stock>0A53</stock><above>5000</above><sell /></when>
+  
 </strategy>
