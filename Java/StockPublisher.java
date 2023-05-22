@@ -35,7 +35,7 @@ public class StockPublisher {
     //   }
     //   System.out.println(markets.toString());
 
-      System.console().writer().println("Starting stock publisher....");
+//      System.console().writer().println("Starting stock publisher....");
 
     //   for (Map.Entry<String, ArrayList<String>> entry : markets.entrySet()) {
     //     String market = entry.getKey();

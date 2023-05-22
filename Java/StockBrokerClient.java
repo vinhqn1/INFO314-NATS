@@ -33,14 +33,18 @@ public class StockBrokerClient {
     private static Map<String, Integer> sell = new HashMap<>();
     private static Connection nc;
     public static void main(String[] args) throws IOException, InterruptedException {
-
         String stockBroker = "test";
+        if(args.length > 0) {
+            stockBroker = args[0];
+        }
+
         String natsURL = "nats://127.0.0.1:4222";
-        String portfolioPath = "../Clients/portfolio-1.xml";
-        String strategyPath = "../Clients/strategy-1.xml";
+        String portfolioPath = "./Clients/portfolio-1.xml";
+        String strategyPath = "./Clients/strategy-1.xml";
         nc = Nats.connect("localhost:4222");
         buildPortfolio(portfolioPath);
         buildStrategy(strategyPath);
+        String finalStockBroker = stockBroker;
         Dispatcher dispatcher = nc.createDispatcher((msg) -> {
             String xml = new String(msg.getData());
             DocumentBuilder dBuilder = null;
@@ -54,9 +58,9 @@ public class StockBrokerClient {
                 // need to validate if client has enough stock to sell
                 boolean requestSucessful = false;
                 if(sell.containsKey(symbol) && price > sell.get(symbol)){
-                    requestSucessful = handleRequest("sell", stockBroker, symbol, portfolio.get(symbol));
+                    requestSucessful = handleRequest("sell", finalStockBroker, symbol, portfolio.get(symbol));
                 } else if(buy.containsKey(symbol) && price < buy.get(symbol)[0]) {
-                    requestSucessful = handleRequest("buy", stockBroker, symbol, buy.get(symbol)[1]);
+                    requestSucessful = handleRequest("buy", finalStockBroker, symbol, buy.get(symbol)[1]);
                 }
                 if(requestSucessful) {
                     updatePortfolio(portfolioPath);
