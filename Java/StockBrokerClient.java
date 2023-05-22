@@ -53,7 +53,7 @@ public class StockBrokerClient {
             strategyPath = "./Clients/" + client + "/" + args[4];
         }
 
-        nc = Nats.connect(natsURL);
+        nc = Nats.connect(natsURL;
         buildPortfolio(portfolioPath);
         buildStrategy(strategyPath);
         String finalStockBroker = stockBroker;
@@ -84,7 +84,7 @@ public class StockBrokerClient {
             }
 
         });
-		dispatcher.subscribe("MARKET.*");
+		dispatcher.subscribe("MARKET.*.*");
     }
     public static void updatePortfolio(String portfolioPath) throws ParserConfigurationException {
 

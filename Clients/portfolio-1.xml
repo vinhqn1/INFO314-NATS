@@ -1,9 +1,34 @@
 <!-- A tech-heavy portfolio -->
 <portfolio>
-    <stock symbol="MSFT">500</stock>
-    <stock symbol="AMZN">500</stock>
-    <stock symbol="BLIZ">500</stock>
-    <stock symbol="GOOG">500</stock>
-    <stock symbol="NTFLX">500</stock>
-    <stock symbol="APPL">500</stock>
+    <stock symbol="NYSE.AIRBNB">500</stock>
+    <stock symbol="NYSE.AMZN">500</stock>
+    <stock symbol="NYSE.AAPL">500</stock>
+    <stock symbol="NYSE.ACU">500</stock>
+    <stock symbol="NYSE.AAL">500</stock>
+    <stock symbol="NYSE.ABDE">500</stock>
+    <stock symbol="NYSE.AN">500</stock>
+    <stock symbol="NYSE.AXP">500</stock>
+    <stock symbol="NYSE.AZO">500</stock>
+    <stock symbol="NYSE.BARK">500</stock>
+    <stock symbol="NASDAQ.NVDA">500</stock>
+    <stock symbol="NASDAQ.FOSL">500</stock>
+    <stock symbol="NASDAQ.OPI">500</stock>
+    <stock symbol="NASDAQ.CMCSA">500</stock>
+    <stock symbol="NASDAQ.TSLA">500</stock>
+    <stock symbol="NASDAQ.QQQ">500</stock>
+    <stock symbol="NASDAQ.COMP">500</stock>
+    <stock symbol="NASDAQ.NDX">500</stock>
+    <stock symbol="NASDAQ.LFCR">500</stock>
+    <stock symbol="NASDAQ.AMD">500</stock>
+    <stock symbol="LSE.ACPE">500</stock>
+    <stock symbol="LSE.AEP">500</stock>
+    <stock symbol="LSE.BC88">500</stock>
+    <stock symbol="LSE.HYUD">500</stock>
+    <stock symbol="LSE.OJ5T">500</stock>
+    <stock symbol="LSE.0QLL">500</stock>
+    <stock symbol="LSE.0A1K">500</stock>
+    <stock symbol="LSE.OLG5">500</stock>
+    <stock symbol="LSE.0REK">500</stock>
+    <stock symbol="LSE.0A53">500</stock>
+
 </portfolio>

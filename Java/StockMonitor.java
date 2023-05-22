@@ -68,6 +68,6 @@ public class StockMonitor {
             }
         });
         
-        d.subscribe("stockmarket");
+        d.subscribe("MARKET.*.*");
     }
 }

@@ -26,7 +26,6 @@ public class StockBroker {
 	private synchronized static void getMarket() {
 		try {
 			Connection nc = Nats.connect(natsURL);
-			System.out.println("connection made");
 			Dispatcher d = nc.createDispatcher((msg) -> {
 				String response = new String(msg.getData());
 				try {
@@ -40,7 +39,7 @@ public class StockBroker {
 					ex.printStackTrace();
 				}
 			});
-			d.subscribe("MARKET.*");
+			d.subscribe("MARKET.*.*");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -50,7 +49,6 @@ public class StockBroker {
 	private synchronized static void handleClient() {
 		try {
 			Connection nc = Nats.connect(natsURL);
-			System.out.println("connection made");
 			Dispatcher d = nc.createDispatcher((msg) -> {
 				String response = new String(msg.getData());
 				System.out.println(response);
@@ -82,7 +80,7 @@ public class StockBroker {
 			symbol = orderNode.getAttribute("symbol");
 			
 			shares = Integer.parseInt(orderNode.getAttribute("amount"));
-			buySell = orderElement.getTagName();
+			buySell = orderNode.getTagName();
 			String orderString = order.replace("<order>", "").replace("</order>", "");
 			String response = "<orderReceipt>" + orderString;
 			int symbolPrice = currentMarket.get(symbol); 

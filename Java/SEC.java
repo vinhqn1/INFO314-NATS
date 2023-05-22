@@ -6,52 +6,44 @@ import io.nats.client.*;
 public class SEC {
   public static void main(String... args) throws Exception {
     Connection nc = Nats.connect("nats://localhost:4222");
+    DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+
     Dispatcher d = nc.createDispatcher((msg) -> {
-        System.out.println("Received a message.");
-       if (msg.getSubject().contains("_INBOX")) {
-         String xml = new String(msg.getData());
-         try {
-           DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-           DocumentBuilder builder = factory.newDocumentBuilder();
-           Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
+      System.out.println("Received a message.");
+      String xml = new String(msg.getData());
 
-           document.getDocumentElement().normalize();
-           Element root = document.getDocumentElement();
+      try {
+        Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
+        Element root = document.getDocumentElement();
 
-           NodeList buy = root.getElementsByTagName("buy");
-           NodeList sell = root.getElementsByTagName("sell");
+        // Parse the order receipt XML structure
+        String timestamp = root.getAttribute("timestamp");
+        String client = root.getAttribute("client");
+        String broker = root.getAttribute("broker");
+        String order = root.getTextContent().trim();
+        double amount = Double.parseDouble(order);
 
-           String timestamp = root.getAttribute("sent");
-           String broker = root.getAttribute("broker");
-           String stock = ((Element) root.getElementsByTagName("stock").item(0)).getAttribute("symbol");
+        // Process the extracted information
+        System.out.println("Received order receipt:");
+        System.out.println("Timestamp: " + timestamp);
+        System.out.println("Client: " + client);
+        System.out.println("Broker: " + broker);
+        System.out.println("Order: " + order);
+        System.out.println("Amount: " + amount);
 
-           int price = -1;
-           int quantity = -1;
-           int transactionValue;
-
-           if (buy.getLength() > 0) {
-              price = Integer.valueOf(((Element) buy.item(0)).getAttribute("price"));
-              quantity = Integer.valueOf(((Element) buy.item(0)).getAttribute("quantity"));
-           } else if (sell.getLength() > 0) {
-              price = Integer.valueOf(((Element) sell.item(0)).getAttribute("price"));
-              quantity = Integer.valueOf(((Element) sell.item(0)).getAttribute("quantity"));
-           }
-
-           transactionValue = price * quantity;
-           
-           // Assuming suspicious transaction is above $5000 or 5000 in your units.
-           if (transactionValue > 500000) {
-             try (FileWriter fw = new FileWriter("suspicious.log", true)) {
-                 fw.write(String.format("%s, %s, %s, %s, %d, %d, %d\n", timestamp, msg.getSubject(), broker, stock, price, quantity, transactionValue));
-             } catch (IOException e) {
-                 e.printStackTrace();
-             }
-           }
-         } catch (Exception e) {
+        // Log suspicious transactions
+        if (amount > 5000) {
+          try (FileWriter fw = new FileWriter("suspicions.log", true)) {
+            fw.write(String.format("%s, %s, %s, %s, %.2f\n", timestamp, client, broker, order, amount));
+          } catch (IOException e) {
             e.printStackTrace();
-         }
-       }
+          }
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     });
+
     d.subscribe(">");
   }
 }
