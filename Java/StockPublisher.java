@@ -1,48 +1,72 @@
-import org.w3c.dom.*;
-import javax.xml.parsers.*;
-import java.io.*;
 import io.nats.client.*;
+import java.util.*;
+import java.io.*;
+import java.text.SimpleDateFormat;
 
-public class SEC {
-  public static void main(String... args) throws Exception {
-    Connection nc = Nats.connect("nats://localhost:4222");
-    DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+/**
+ * Take the NATS URL on the command-line.
+ */
+public class StockPublisher {
+    public static String natsURL = "localhost:4222";
+  public static void main(String... args) throws IOException, InterruptedException {
 
-    Dispatcher d = nc.createDispatcher((msg) -> {
-      System.out.println("Received a message.");
-      String xml = new String(msg.getData());
+      if (args.length > 0) {
+          natsURL = args[0];
+      }
 
-      try {
-        Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
-        Element root = document.getDocumentElement();
+      HashMap<String, ArrayList<String>> markets = new HashMap<>();
 
-        // Parse the order receipt XML structure
-        String orderId = root.getAttribute("orderId");
-        String clientName = ((Element) root.getElementsByTagName("clientName").item(0)).getTextContent();
-        String brokerName = ((Element) root.getElementsByTagName("brokerName").item(0)).getTextContent();
-        double amount = Double.parseDouble(((Element) root.getElementsByTagName("amount").item(0)).getTextContent());
-
-        // Process the extracted information
-        System.out.println("Received order receipt:");
-        System.out.println("Order ID: " + orderId);
-        System.out.println("Client Name: " + clientName);
-        System.out.println("Broker Name: " + brokerName);
-        System.out.println("Amount: " + amount);
-
-        // Log suspicious transactions
-        if (amount > 5000) {
-            try (FileWriter fw = new FileWriter("suspicions.log", true)) {
-              fw.write(String.format("%s, %s, %s, %s, %.2f\n", timestamp, client, broker, order, amount));
-            } catch (IOException e) {
-              e.printStackTrace();
+      try (BufferedReader reader = new BufferedReader(new FileReader("stocks.txt"))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(":");
+            if (parts.length == 2) {
+                String market = parts[0].trim();
+                String[] symbols = parts[1].trim().split(", ");
+                ArrayList<String> symbolList = new ArrayList<>();
+                for (String symbol : symbols) {
+                    symbolList.add(market + "." + symbol.trim());
+                }
+                markets.put(market, symbolList);
             }
-          }
-
-      } catch (Exception e) {
+        }
+      } catch (IOException e) {
         e.printStackTrace();
       }
-    });
+      System.out.println(markets.toString());
 
-    d.subscribe(">");
-  }
+     System.console().writer().println("Starting stock publisher....");
+
+      for (Map.Entry<String, ArrayList<String>> entry : markets.entrySet()) {
+        String market = entry.getKey();
+        ArrayList<String> symbols = entry.getValue();
+
+        StockMarket stockMarket = new StockMarket(StockPublisher::publishMessage, symbols.toArray(new String[0]));
+        Thread thread = new Thread(stockMarket);
+        thread.start();
+      }
+
+    //   StockMarket sm1 = new StockMarket(StockPublisher::publishMessage, "NASDAQ.AMZN", "MSFT", "GOOG");
+    //   new Thread(sm1).start();
+    //   StockMarket sm2 = new StockMarket(StockPublisher::publishMessage, "ACTV", "BLIZ", "ROVIO");
+    //   new Thread(sm2).start();
+    //   StockMarket sm3 = new StockMarket(StockPublisher::publishMessage, "GE", "GMC", "FORD");
+    //   new Thread(sm3).start();
+    }
+
+    public synchronized static void publishDebugOutput(String symbol, int adjustment, int price){
+        System.console().writer().printf("PUBLISHING %s: %d -> %f\n", symbol, adjustment, (price / 100.f));
+    }
+    // When you have the NATS code here to publish a message, put "publishMessage" in
+    // the above where "publishDebugOutput" currently is
+    public synchronized static void publishMessage(String symbol, int adjustment, int price) {
+        try (Connection nc = Nats.connect(natsURL)) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String timestamp = dateFormat.format(new Date());
+            String message = "<message sent=\"" + timestamp + "\"><stock><name>" + symbol + "</name><adjustment>" + adjustment + "</adjustment><adjustedPrice>" + price + "</adjustedPrice></stock></message>";
+            nc.publish("MARKET." + symbol, message.getBytes());
+        } catch (IOException | InterruptedException ex) {
+            ex.printStackTrace();
+        }
+    } 
 }

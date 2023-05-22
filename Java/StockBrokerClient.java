@@ -39,8 +39,8 @@ public class StockBrokerClient {
         }
 
         String natsURL = "nats://127.0.0.1:4222";
-        String portfolioPath = "./Clients/portfolio-1.xml";
-        String strategyPath = "./Clients/strategy-1.xml";
+        String portfolioPath = "../Clients/portfolio-1.xml";
+        String strategyPath = "../Clients/strategy-1.xml";
         nc = Nats.connect("localhost:4222");
         buildPortfolio(portfolioPath);
         buildStrategy(strategyPath);
@@ -71,7 +71,7 @@ public class StockBrokerClient {
             }
 
         });
-		dispatcher.subscribe("MARKET.*");
+		dispatcher.subscribe("MARKET.*.*");
     }
     public static void updatePortfolio(String portfolioPath) throws ParserConfigurationException {
 
