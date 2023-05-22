@@ -1,49 +1,57 @@
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import io.nats.client.*;
 
 public class SEC {
-  public static void main(String... args) throws Exception {
-    Connection nc = Nats.connect("nats://localhost:4222");
-    DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    private static final String LOG_FILE_PATH = "suspicions.log";
 
-    Dispatcher d = nc.createDispatcher((msg) -> {
-      System.out.println("Received a message.");
-      String xml = new String(msg.getData());
+    public static void main(String... args) throws Exception {
+        Connection nc = Nats.connect("nats://localhost:4222");
+        Dispatcher d = nc.createDispatcher((msg) -> {
+            System.out.println("Received a message.");
 
-      try {
-        Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
-        Element root = document.getDocumentElement();
+            if (msg.getSubject().contains("_INBOX")) {
+                String xml = new String(msg.getData());
 
-        // Parse the order receipt XML structure
-        String timestamp = root.getAttribute("timestamp");
-        String client = root.getAttribute("client");
-        String broker = root.getAttribute("broker");
-        String order = root.getTextContent().trim();
-        double amount = Double.parseDouble(order);
+                try {
+                    FileWriter fw = new FileWriter(LOG_FILE_PATH, true);
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    InputSource inputSource = new InputSource(new StringReader(xml));
+                    Document document = builder.parse(inputSource);
 
-        // Process the extracted information
-        System.out.println("Received order receipt:");
-        System.out.println("Timestamp: " + timestamp);
-        System.out.println("Client: " + client);
-        System.out.println("Broker: " + broker);
-        System.out.println("Order: " + order);
-        System.out.println("Amount: " + amount);
+                    document.getDocumentElement().normalize();
+                    Element root = document.getDocumentElement();
 
-        // Log suspicious transactions
-        if (amount > 5000) {
-          try (FileWriter fw = new FileWriter("suspicions.log", true)) {
-            fw.write(String.format("%s, %s, %s, %s, %.2f\n", timestamp, client, broker, order, amount));
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    });
+                    NodeList buy = root.getElementsByTagName("buy");
+                    NodeList complete = root.getElementsByTagName("complete");
 
-    d.subscribe(">");
-  }
+                    String symbol = ((Element) buy.item(0)).getAttribute("symbol");
+                    int amount = Integer.parseInt(((Element) complete.item(0)).getAttribute("amount"));
+
+                    LocalDateTime timestamp = LocalDateTime.now();
+                    String formattedTimestamp = timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+                    String client = ""; // Replace with the appropriate value
+                    String broker = ""; // Replace with the appropriate value
+                    String orderSent = ""; // Replace with the appropriate value
+
+                    String logEntry = String.format("[Timestamp]: %s\n[Client]: %s\n[Broker]: %s\n[Order Sent]: %s\n[Amount]: %d\n\n",
+                            formattedTimestamp, client, broker, orderSent, amount);
+
+                    fw.write(logEntry);
+                    fw.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        d.subscribe(">");
+    }
 }
