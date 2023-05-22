@@ -1,16 +1,19 @@
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
+import org.xml.sax.SAXException;
 import java.io.*;
 import io.nats.client.*;
+import java.util.Date;
+import java.sql.Timestamp;
 
 public class SEC {
   public static void main(String... args) throws Exception {
     Connection nc = Nats.connect("nats://localhost:4222");
     Dispatcher d = nc.createDispatcher((msg) -> {
         System.out.println("Received a message.");
-       if (msg.getSubject().contains("_INBOX")) {
          String xml = new String(msg.getData());
-         try {
+         try{
+           FileWriter fw = new FileWriter("suspicious.log", true);
            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
            DocumentBuilder builder = factory.newDocumentBuilder();
            Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
@@ -21,36 +24,25 @@ public class SEC {
            NodeList buy = root.getElementsByTagName("buy");
            NodeList sell = root.getElementsByTagName("sell");
 
+           int price = -1;
            String timestamp = root.getAttribute("sent");
            String broker = root.getAttribute("broker");
-           String stock = ((Element) root.getElementsByTagName("stock").item(0)).getAttribute("symbol");
 
-           int price = -1;
-           int quantity = -1;
-           int transactionValue;
+           double transaction = -1;
+            NodeList amount = root.getElementsByTagName("complete");
+            transaction = Double.parseDouble(((Element) amount.item(0)).getAttribute("amount"));
 
-           if (buy.getLength() > 0) {
-              price = Integer.valueOf(((Element) buy.item(0)).getAttribute("price"));
-              quantity = Integer.valueOf(((Element) buy.item(0)).getAttribute("quantity"));
-           } else if (sell.getLength() > 0) {
-              price = Integer.valueOf(((Element) sell.item(0)).getAttribute("price"));
-              quantity = Integer.valueOf(((Element) sell.item(0)).getAttribute("quantity"));
-           }
+             System.out.println("[Transaction Price]: " + transaction);
 
-           transactionValue = price * quantity;
-           
-           // Assuming suspicious transaction is above $5000 or 5000 in your units.
-           if (transactionValue > 500000) {
-             try (FileWriter fw = new FileWriter("suspicious.log", true)) {
-                 fw.write(String.format("%s, %s, %s, %s, %d, %d, %d\n", timestamp, msg.getSubject(), broker, stock, price, quantity, transactionValue));
-             } catch (IOException e) {
-                 e.printStackTrace();
-             }
-           }
+            if (transaction > 5000) {
+
+                fw.write(new String(timestamp + ", " + msg.getSubject() + ", " + broker + ", " + "\n"));
+                fw.write(xml + "\n\n");
+                fw.close();
+            }
          } catch (Exception e) {
-            e.printStackTrace();
+                e.printStackTrace();
          }
-       }
     });
     d.subscribe(">");
   }
