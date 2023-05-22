@@ -50,13 +50,18 @@ public class StockBrokerClient {
                 String symbol = doc.getElementsByTagName("name").item(0).getTextContent();
                 String priceEle = doc.getElementsByTagName("adjustedPrice").item(0).getTextContent();
                 int price = Integer.parseInt(priceEle);
+
                 // need to validate if client has enough stock to sell
+                boolean requestSucessful = false;
                 if(sell.containsKey(symbol) && price > sell.get(symbol)){
-                    handleRequest("sell", stockBroker, symbol, portfolio.get(symbol));
+                    requestSucessful = handleRequest("sell", stockBroker, symbol, portfolio.get(symbol));
                 } else if(buy.containsKey(symbol) && price < buy.get(symbol)[0]) {
-                    handleRequest("buy", stockBroker, symbol, buy.get(symbol)[1]);
+                    requestSucessful = handleRequest("buy", stockBroker, symbol, buy.get(symbol)[1]);
                 }
-                updatePortfolio();
+                if(requestSucessful) {
+                    updatePortfolio(portfolioPath);
+                }
+
             } catch (ParserConfigurationException | SAXException | IOException e) {
                 e.printStackTrace();
             }
@@ -64,7 +69,7 @@ public class StockBrokerClient {
         });
 		dispatcher.subscribe("MARKET.*");
     }
-    public static void updatePortfolio() throws ParserConfigurationException {
+    public static void updatePortfolio(String portfolioPath) throws ParserConfigurationException {
 
         DocumentBuilder docBuilder = dbf.newDocumentBuilder();
 
@@ -85,37 +90,42 @@ public class StockBrokerClient {
 
         // write dom document to a file
         try (FileOutputStream output =
-                     new FileOutputStream("../Clients/test.xml")) {
+                     new FileOutputStream(portfolioPath)) {
             writeXml(doc, output);
         } catch (IOException | TransformerException e) {
             e.printStackTrace();
         }
     }
 
-    public static void handleRequest(String method, String stockBroker, String symbol, int shares) {
-
-        StringBuilder request = new StringBuilder();
-        request.append("<order>");
-        request.append("<");
-        request.append(method);
-        request.append(" symbol=\"");
-        request.append(symbol);
-        request.append("\" amount=\"");
-        request.append(shares);
-        request.append("\" /></order>");
-        String send = request.toString();
-		System.out.println(send);
-        try {
-            Message msg = nc.request("BROKER."+stockBroker, send.getBytes(), Duration.ofSeconds(100));
-            System.out.println(new String(msg.getData()));
-            if(method.equals("sell")) {
-                portfolio.put(symbol, 0);
-            } else {
-                portfolio.put(symbol, portfolio.get(symbol) + shares);
+    public static boolean handleRequest(String method, String stockBroker, String symbol, int shares) {
+        if(shares > 0) {
+            StringBuilder request = new StringBuilder();
+            request.append("<order>");
+            request.append("<");
+            request.append(method);
+            request.append(" symbol=\"");
+            request.append(symbol);
+            request.append("\" amount=\"");
+            request.append(shares);
+            request.append("\" /></order>");
+            String send = request.toString();
+            System.out.println(send);
+            try {
+                Message msg = nc.request("BROKER."+stockBroker, send.getBytes(), Duration.ofSeconds(100));
+                System.out.println(new String(msg.getData()));
+                if(method.equals("sell")) {
+                    portfolio.put(symbol, 0);
+                } else {
+                    portfolio.put(symbol, portfolio.get(symbol) + shares);
+                }
+            return true;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+
         }
+
+        return false;
 
     }
     public static void buildPortfolio(String portfolioPath) {
