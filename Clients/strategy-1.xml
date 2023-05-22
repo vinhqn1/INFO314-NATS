@@ -1,35 +1,34 @@
 <!-- A very tech-centric strategy -->
 <strategy>
-  <when><stock>AIRBNB</stock><above>5000</above><sell /></when>
-  <when><stock>AAPL</stock><above>5000</above><sell /></when>
-  <when><stock>ACU</stock><above>5000</above><sell /></when>
-  <when><stock>AAL</stock><above>5000</above><sell /></when>
-  <when><stock>ABDE</stock><below>1000</below><buy>500</buy></when>
-  <when><stock>AN</stock><below>1000</below><buy>500</buy></when>
-  <when><stock>AXP</stock><below>1500</below><buy>500</buy></when>
-  <when><stock>AN</stock><below>1500</below><buy>500</buy></when>
-  <when><stock>AMZN</stock><below>1000</below><buy>500</buy></when>
-  <when><stock>AZO</stock><below>1000</below><buy>500</buy></when>
-  <when><stock>BARK</stock><below>1500</below><buy>500</buy></when>
-  <when><stock>NVDA</stock><below>1500</below><buy>500</buy></when>
-  <when><stock>FOSL</stock><below>1000</below><buy>500</buy></when>
-  <when><stock>OPI</stock><below>1000</below><buy>500</buy></when>
-  <when><stock>CMCSA</stock><below>1500</below><buy>500</buy></when>
-  <when><stock>TSLA</stock><below>1500</below><buy>500</buy></when>
-  <when><stock>QQQ</stock><above>5000</above><sell /></when>
-  <when><stock>COMP</stock><above>5000</above><sell /></when>
-  <when><stock>AMP</stock><above>5000</above><sell /></when>
-  <when><stock>NDX</stock><above>5000</above><sell /></when>
-  <when><stock>LFCR</stock><below>1000</below><buy>500</buy></when>
-  <when><stock>ACPE</stock><below>1000</below><buy>500</buy></when>
-  <when><stock>AEP</stock><above>5000</above><sell /></when>
-  <when><stock>BC88</stock><above>5000</above><sell /></when>
-  <when><stock>HYUD</stock><above>5000</above><sell /></when>
-  <when><stock>0J5T</stock><above>5000</above><sell /></when>
-  <when><stock>0QLL</stock><below>1000</below><buy>500</buy></when>
-  <when><stock>0A1K</stock><below>1000</below><buy>500</buy></when>
-  <when><stock>OLG5</stock><above>5000</above><sell /></when>
-  <when><stock>0REK</stock><above>5000</above><sell /></when>
-  <when><stock>0A53</stock><above>5000</above><sell /></when>
+  <when><stock>NYSE.AIRBNB</stock><above>5000</above><sell /></when>
+  <when><stock>NYSE.AAPL</stock><above>5000</above><sell /></when>
+  <when><stock>NYSE.ACU</stock><above>5000</above><sell /></when>
+  <when><stock>NYSE.AAL</stock><above>5000</above><sell /></when>
+  <when><stock>NYSE.ABDE</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>NYSE.AN</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>NYSE.AXP</stock><below>1500</below><buy>500</buy></when>
+  <when><stock>NYSE.BARK</stock><below>1500</below><buy>500</buy></when>
+  <when><stock>NYSE.AMZN</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>NYSE.AZO</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>NASDAQ.NVDA</stock><below>1500</below><buy>500</buy></when>
+  <when><stock>NASDAQ.FOSL</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>NASDAQ.OPI</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>NASDAQ.CMCSA</stock><below>1500</below><buy>500</buy></when>
+  <when><stock>NASDAQ.TSLA</stock><below>1500</below><buy>500</buy></when>
+  <when><stock>NASDAQ.QQQ</stock><above>5000</above><sell /></when>
+  <when><stock>NASDAQ.COMP</stock><above>5000</above><sell /></when>
+  <when><stock>NASDAQ.NDX</stock><above>5000</above><sell /></when>
+  <when><stock>NASDAQ.AMD</stock><above>5000</above><sell /></when>
+  <when><stock>NASDAQ.LFCR</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>LSE.ACPE</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>LSE.AEP</stock><above>5000</above><sell /></when>
+  <when><stock>LSE.BC88</stock><above>5000</above><sell /></when>
+  <when><stock>LSE.HYUD</stock><above>5000</above><sell /></when>
+  <when><stock>LSE.0J5T</stock><above>5000</above><sell /></when>
+  <when><stock>LSE.0QLL</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>LSE.0A1K</stock><below>1000</below><buy>500</buy></when>
+  <when><stock>LSE.OLG5</stock><above>5000</above><sell /></when>
+  <when><stock>LSE.0REK</stock><above>5000</above><sell /></when>
+  <when><stock>LSE.0A53</stock><above>5000</above><sell /></when>
   
 </strategy>
