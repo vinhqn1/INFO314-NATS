@@ -34,17 +34,30 @@ public class StockBrokerClient {
     private static Connection nc;
     public static void main(String[] args) throws IOException, InterruptedException {
         String stockBroker = "test";
-        if(args.length > 0) {
-            stockBroker = args[0];
-        }
-
-        String natsURL = "nats://127.0.0.1:4222";
         String portfolioPath = "./Clients/portfolio-1.xml";
         String strategyPath = "./Clients/strategy-1.xml";
-        nc = Nats.connect("localhost:4222");
+        String client = "client-example";
+        String natsURL = "localhost:4222";
+
+        if(args.length > 1) {
+            stockBroker = args[0];
+
+        }
+        if(args.length == 2) {
+            natsURL = args[1];
+        }
+        // assumption: clients strategy and portfolio will always be in the clients folder path
+        if(args.length == 5) {
+            client = args[2];
+            portfolioPath = "./Clients/" + client + "/" + args[3];
+            strategyPath = "./Clients/" + client + "/" + args[4];
+        }
+
+        nc = Nats.connect(natsURL);
         buildPortfolio(portfolioPath);
         buildStrategy(strategyPath);
         String finalStockBroker = stockBroker;
+        String finalPortfolioPath = portfolioPath;
         Dispatcher dispatcher = nc.createDispatcher((msg) -> {
             String xml = new String(msg.getData());
             DocumentBuilder dBuilder = null;
@@ -63,7 +76,7 @@ public class StockBrokerClient {
                     requestSucessful = handleRequest("buy", finalStockBroker, symbol, buy.get(symbol)[1]);
                 }
                 if(requestSucessful) {
-                    updatePortfolio(portfolioPath);
+                    updatePortfolio(finalPortfolioPath);
                 }
 
             } catch (ParserConfigurationException | SAXException | IOException e) {
