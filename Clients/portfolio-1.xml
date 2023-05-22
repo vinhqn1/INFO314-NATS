@@ -1,1 +1,34 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><portfolio><stock symbol="LSE.OJ5T">500</stock><stock symbol="LSE.0A1K">500</stock><stock symbol="NYSE.AXP">94000</stock><stock symbol="LSE.AEP">0</stock><stock symbol="NYSE.BARK">500</stock><stock symbol="LSE.ACPE">500</stock><stock symbol="LSE.0REK">0</stock><stock symbol="NYSE.ACU">0</stock><stock symbol="NASDAQ.NDX">0</stock><stock symbol="NASDAQ.LFCR">17000</stock><stock symbol="NYSE.AZO">1000</stock><stock symbol="NASDAQ.NVDA">500</stock><stock symbol="LSE.OLG5">0</stock><stock symbol="NASDAQ.QQQ">0</stock><stock symbol="LSE.HYUD">0</stock><stock symbol="NASDAQ.TSLA">500</stock><stock symbol="NASDAQ.COMP">0</stock><stock symbol="NYSE.AAPL">0</stock><stock symbol="LSE.0A53">0</stock><stock symbol="NYSE.AN">500</stock><stock symbol="NASDAQ.CMCSA">1500</stock><stock symbol="LSE.0QLL">59500</stock><stock symbol="NASDAQ.OPI">80500</stock><stock symbol="NYSE.AIRBNB">0</stock><stock symbol="NYSE.AAL">0</stock><stock symbol="LSE.BC88">0</stock><stock symbol="NASDAQ.FOSL">52500</stock><stock symbol="NYSE.AMZN">64000</stock><stock symbol="NASDAQ.AMD">0</stock><stock symbol="NYSE.ABDE">500</stock></portfolio>
+<!-- A tech-heavy portfolio -->
+<portfolio>
+    <stock symbol="NYSE.AIRBNB">500</stock>
+    <stock symbol="NYSE.AMZN">500</stock>
+    <stock symbol="NYSE.AAPL">500</stock>
+    <stock symbol="NYSE.ACU">500</stock>
+    <stock symbol="NYSE.AAL">500</stock>
+    <stock symbol="NYSE.ABDE">500</stock>
+    <stock symbol="NYSE.AN">500</stock>
+    <stock symbol="NYSE.AXP">500</stock>
+    <stock symbol="NYSE.AZO">500</stock>
+    <stock symbol="NYSE.BARK">500</stock>
+    <stock symbol="NASDAQ.NVDA">500</stock>
+    <stock symbol="NASDAQ.FOSL">500</stock>
+    <stock symbol="NASDAQ.OPI">500</stock>
+    <stock symbol="NASDAQ.CMCSA">500</stock>
+    <stock symbol="NASDAQ.TSLA">500</stock>
+    <stock symbol="NASDAQ.QQQ">500</stock>
+    <stock symbol="NASDAQ.COMP">500</stock>
+    <stock symbol="NASDAQ.NDX">500</stock>
+    <stock symbol="NASDAQ.LFCR">500</stock>
+    <stock symbol="NASDAQ.AMD">500</stock>
+    <stock symbol="LSE.ACPE">500</stock>
+    <stock symbol="LSE.AEP">500</stock>
+    <stock symbol="LSE.BC88">500</stock>
+    <stock symbol="LSE.HYUD">500</stock>
+    <stock symbol="LSE.OJ5T">500</stock>
+    <stock symbol="LSE.0QLL">500</stock>
+    <stock symbol="LSE.0A1K">500</stock>
+    <stock symbol="LSE.OLG5">500</stock>
+    <stock symbol="LSE.0REK">500</stock>
+    <stock symbol="LSE.0A53">500</stock>
+
+</portfolio>
