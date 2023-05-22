@@ -9,8 +9,13 @@ import io.nats.client.*;
 
 public class SEC {
     private static final String LOG_FILE_PATH = "suspicions.log";
+    private static String brokerName = "";
 
     public static void main(String... args) throws Exception {
+        if (args.length > 0) {
+            brokerName = args[0];
+        }
+
         Connection nc = Nats.connect("nats://localhost:4222");
         Dispatcher d = nc.createDispatcher((msg) -> {
             System.out.println("Received a message.");
@@ -38,7 +43,7 @@ public class SEC {
                     String formattedTimestamp = timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
                     String client = ""; // Replace with the appropriate value
-                    String broker = ""; // Replace with the appropriate value
+                    String broker = brokerName;
                     String orderSent = ""; // Replace with the appropriate value
 
                     String logEntry = String.format("[Timestamp]: %s\n[Client]: %s\n[Broker]: %s\n[Order Sent]: %s\n[Amount]: %d\n\n",
